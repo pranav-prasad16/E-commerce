@@ -39,16 +39,19 @@ function App() {
     <Router>
       <Navbar isAuthenticated={isAuthenticated} />
       <Routes>
-        <Route index element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route index element={<Home isAuthenticated={isAuthenticated} />} />
+        <Route path="/login" element={<Login onlogin={login} />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<Profile onlogout={logout} />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/products" element={<ProductsList />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/category/:cid" element={<Category />} />
-        <Route path="/product/:pid" element={<ProductDetail />} />
+        <Route
+          path="/product/:pid"
+          element={<ProductDetail isAuthenticated={isAuthenticated} />}
+        />
         <Route path="*" element={<NoPage />} />
       </Routes>
     </Router>

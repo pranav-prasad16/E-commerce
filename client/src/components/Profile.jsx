@@ -1,9 +1,15 @@
 import React from 'react';
+import { useState } from 'react';
 
 function Profile() {
   return (
     <>
-      <p>Profile</p>
+      <div className="container">
+        <h1>Profile</h1>
+        <div>
+          <h2>First name : </h2>{' '}
+        </div>
+      </div>
     </>
   );
 }

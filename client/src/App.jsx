@@ -20,7 +20,7 @@ import Category from './components/Category';
 import NoPage from './components/NoPage';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   const login = (Token) => {
     localStorage.setItem('Token', Token);

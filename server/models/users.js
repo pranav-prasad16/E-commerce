@@ -27,6 +27,18 @@ const userSchema = new mongoose.Schema({
     enum: ['customer', 'admin'],
     default: 'customer',
   },
+  shippingAddress: {
+    type: String,
+    required: true,
+  },
+  billingAddress: {
+    type: String,
+    required: true,
+  },
+  street: String,
+  city: String,
+  pinCode: String,
+  country: String,
 });
 
 const User = mongoose.model('user', userSchema);

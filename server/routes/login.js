@@ -9,14 +9,16 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post('/', async (req, res) => {
-  const { email, password } = req.body;
+  const { emailOrPhone, password } = req.body;
 
-  if ((!email, !password)) {
+  if ((!emailOrPhone, !password)) {
     return res.status(401).json({ msg: 'All fields are required...' });
   }
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+    });
     if (!user) {
       return res.status(409).json({ msg: 'User not found' });
     }

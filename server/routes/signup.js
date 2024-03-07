@@ -9,7 +9,6 @@ router.post('/', async (req, res) => {
     !body.lastName ||
     !body.email ||
     !body.phone ||
-    !body.gender ||
     !body.password
   ) {
     return res.status(400).json({ msg: 'All fields are required...' });
@@ -21,7 +20,6 @@ router.post('/', async (req, res) => {
       lastName: body.lastName,
       email: body.email,
       phone: body.phone,
-      gender: body.gender,
       password: body.password,
       role: body.role || 'customer',
     });

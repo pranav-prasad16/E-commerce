@@ -27,10 +27,12 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
   shippingAddress: {
-    street: String,
-    city: String,
-    pinCode: String,
+    type: String,
+    requied: true,
   },
+  street: String,
+  city: String,
+  pinCode: String,
   orderDate: {
     type: Date,
     default: Date.now,

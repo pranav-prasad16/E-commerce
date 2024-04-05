@@ -6,52 +6,35 @@ import {
   Navigate,
 } from 'react-router-dom';
 import './App.css';
-import Home from './components/Home';
-import Navbar from './components/navbar';
-import Login from './components/login';
-import Signup from './components/signup';
-import Profile from './components/Profile';
-import Cart from './components/Cart';
-import Wishlist from './components/Wishlist';
-import ProductsList from './components/Products';
-import ProductDetail from './components/ProductDetails';
-import Categories from './components/Categories';
-import Category from './components/Category';
-import NoPage from './components/NoPage';
+import Home from './pages/Home';
+import Navbar from './pages/Navbar';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Profile from './pages/Profile';
+import Cart from './pages/Cart';
+import Wishlist from './pages/Wishlist';
+import ProductsList from './pages/Products';
+import ProductDetail from './pages/ProductDetails';
+import CategoriesList from './pages/Categories';
+import Category from './pages/Category';
+import NoPage from './pages/NoPage';
+// import { useAuth } from './context/AuthContext';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
-
-  const login = (Token) => {
-    localStorage.setItem('Token', Token);
-    setIsAuthenticated(true);
-  };
-
-  const logout = () => {
-    localStorage.removeItem('Token');
-    setIsAuthenticated(false);
-  };
-
-  const requireAuth = (component) => {
-    return isAuthenticated ? component : <Navigate to="/login" />;
-  };
   return (
     <Router>
-      <Navbar isAuthenticated={isAuthenticated} />
+      <Navbar />
       <Routes>
-        <Route index element={<Home isAuthenticated={isAuthenticated} />} />
-        <Route path="/login" element={<Login onlogin={login} />} />
+        <Route index element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/profile" element={<Profile onlogout={logout} />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/products" element={<ProductsList />} />
-        <Route path="/categories" element={<Categories />} />
+        <Route path="/categories" element={<CategoriesList />} />
         <Route path="/category/:cid" element={<Category />} />
-        <Route
-          path="/product/:pid"
-          element={<ProductDetail isAuthenticated={isAuthenticated} />}
-        />
+        <Route path="/product/:pid" element={<ProductDetail />} />
         <Route path="*" element={<NoPage />} />
       </Routes>
     </Router>

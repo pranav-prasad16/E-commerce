@@ -1,4 +1,4 @@
-const Cart = require('../models/cart');
+const Cart = require('../models/cartModel');
 
 const postCart = async (req, res) => {
   const cartData = req.body;

@@ -1,5 +1,6 @@
 const stripe = require('stripe');
 const { v4: uuidv4 } = require('uuid');
+const Payment = require('../models/paymentModel');
 
 export const payment = (req, res) => {
   const { product, token } = req.body;

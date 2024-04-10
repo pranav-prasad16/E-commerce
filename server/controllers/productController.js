@@ -43,7 +43,7 @@ const getAllProducts = async (req, res) => {
     );
     // const products = await Product.find().populate('category');
     if (!productList.length) {
-      return res.status(200).json({ msg: 'No products found' });
+      return res.status(200).json({ success: false, msg: 'No products found' });
     }
     return res.status(200).json(productList);
   } catch (err) {
@@ -121,16 +121,17 @@ const postProduct = async (req, res) => {
   ) {
     return res.status(400).json({ msg: 'Missing Fields' });
   }
-  const existingProduct = await Product.findOne({ name: productData.name });
-  if (existingProduct) {
-    return res
-      .status(400)
-      .json({ msg: 'Product with this name already exists' });
-  }
 
   const categoryExist = await Category.findById(productData.category);
   if (!categoryExist) {
     return res.status(404).json({ msg: 'This Category doesnot exist' });
+  }
+
+  const existingProduct = await Product.findOne({ name: productData.name });
+  if (existingProduct) {
+    return res
+      .status(400)
+      .json({ success: false, msg: 'Product with this name already exists' });
   }
 
   try {

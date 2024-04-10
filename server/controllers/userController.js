@@ -16,11 +16,11 @@ const getAllUsers = async (req, res) => {
 
 const getUser = async (req, res) => {
   try {
-    const allUsers = await User.find();
-    if (!allUsers) {
-      res.status(404).json({ msg: 'No users found' });
+    const user = await User.find();
+    if (!user) {
+      res.status(404).json({ success: false, msg: 'No user found' });
     }
-    res.status(200).json(allUsers);
+    res.status(200).json(user);
   } catch (err) {
     console.log('Error : ', err);
     res.status(500).json({ msg: 'Internal Server error' });

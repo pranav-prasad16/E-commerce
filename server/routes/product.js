@@ -2,24 +2,29 @@ const express = require('express');
 const authMiddleware = require('../middleware/auth');
 const adminAuthMiddleware = require('../middleware/adminAuth');
 const {
-  getAllProduct,
+  getAllProducts,
   getProduct,
+  getProductCount,
+  getFeaturedProducts,
   postProduct,
   updateProduct,
   deleteProduct,
 } = require('../controllers/productController');
 const router = express.Router();
 
-router.get('/', getAllProduct);
+router.get('/', getAllProducts);
 
 router.use(authMiddleware);
 
-router.get('/:productId', getProduct);
+router
+  .get('/:productId', getProduct)
+  .get('/get/featured/:count', getFeaturedProducts);
 
 router.use(adminAuthMiddleware);
 router
   .post('/', postProduct)
   .patch('/:productId', updateProduct)
-  .delete('/:productId', deleteProduct);
+  .delete('/:productId', deleteProduct)
+  .get('/', getProductCount);
 
 module.exports = router;

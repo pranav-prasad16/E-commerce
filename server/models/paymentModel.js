@@ -15,6 +15,6 @@ const paymentMethodSchema = new mongoose.Schema({
   // Other fields based on the payment method type
 });
 
-const PaymentMethod = mongoose.model('paymentMethod', paymentMethodSchema);
+const PaymentMethod = mongoose.model('PaymentMethod', paymentMethodSchema);
 
 module.exports = PaymentMethod;

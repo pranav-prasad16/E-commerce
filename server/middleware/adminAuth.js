@@ -1,4 +1,4 @@
-const User = require('../models/users');
+const User = require('../models/userModel');
 
 const adminAuthMiddleware = async (req, res, next) => {
   const user = await User.findById(req.user.id);

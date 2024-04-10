@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendNotification = async (req, res) => {
+const sendNotification = async (req, res) => {
   try {
     const { subject, message } = req.body;
 
@@ -46,3 +46,5 @@ export const sendNotification = async (req, res) => {
     res.status(500).json({ msg: 'Internal server error' });
   }
 };
+
+module.exports = { sendNotification };

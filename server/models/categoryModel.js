@@ -6,9 +6,24 @@ const categorySchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  description: String,
+  icon: {
+    type: String,
+    default: 'icon-name',
+  },
+  color: {
+    type: String,
+    default: '#000',
+  },
 });
 
-const Category = mongoose.model('category', categorySchema);
+categorySchema.virtual('id').get(function () {
+  return this._id.toHexString();
+});
+
+categorySchema.set('toJSON', {
+  virtuals: true,
+});
+
+const Category = mongoose.model('Category', categorySchema);
 
 module.exports = Category;

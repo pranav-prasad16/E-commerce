@@ -3,11 +3,11 @@ const Product = require('../models/productModel');
 
 const getAllCategory = async (req, res) => {
   try {
-    const category = await Category.find();
-    if (!category) {
+    const categoryList = await Category.find();
+    if (!categoryList) {
       return res.status(404).json({ msg: 'No category present' });
     }
-    res.status(200).json(category);
+    res.status(200).json(categoryList);
   } catch (err) {
     console.log('Error : ', err);
     return res.status(500).json({ msg: 'Internal server error' });
@@ -36,6 +36,9 @@ const getCategory = async (req, res) => {
 
 const postCategory = async (req, res) => {
   const categoryData = req.body;
+  if (!categoryData.name || !categoryData.icon || !categoryData.color) {
+    return res.status(400).json({ msg: 'Missing Fields' });
+  }
   try {
     const existingCategory = await Category.find({ name: categoryData.name });
     if (existingCategory) {

@@ -6,7 +6,7 @@ const User = require('../models/userModel');
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
-export const login = async (req, res) => {
+const login = async (req, res) => {
   const { emailOrPhone, password } = req.body;
 
   if ((!emailOrPhone, !password)) {
@@ -40,3 +40,5 @@ export const login = async (req, res) => {
     return res.status(500).json({ msg: 'Internal server error' });
   }
 };
+
+module.exports = { login };

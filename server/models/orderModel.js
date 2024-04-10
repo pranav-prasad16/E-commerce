@@ -1,12 +1,10 @@
 const mongoose = require('mongoose');
-const User = require('./users');
 
 const orderSchema = new mongoose.Schema({
   products: [
     {
       productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
+        type: String,
         required: true,
       },
       quantity: {
@@ -22,8 +20,7 @@ const orderSchema = new mongoose.Schema({
     min: 0,
   },
   customerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true,
   },
   shippingAddress: {
@@ -39,6 +36,14 @@ const orderSchema = new mongoose.Schema({
   },
 });
 
-const Order = mongoose.model('order', orderSchema);
+orderSchema.virtual('id').get(function () {
+  return this._id.toHexString();
+});
+
+orderSchema.set('toJSON', {
+  virtuals: true,
+});
+
+const Order = mongoose.model('Order', orderSchema);
 
 module.exports = Order;

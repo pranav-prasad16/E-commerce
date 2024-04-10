@@ -2,7 +2,7 @@ const stripe = require('stripe');
 const { v4: uuidv4 } = require('uuid');
 const Payment = require('../models/paymentModel');
 
-export const payment = (req, res) => {
+const payment = (req, res) => {
   const { product, token } = req.body;
   console.log('Product :', product);
   console.log('Product price : ', product.price);
@@ -37,3 +37,5 @@ export const payment = (req, res) => {
     return res.status(500).json({ msg: 'Internal server error' });
   }
 };
+
+module.exports = { payment };

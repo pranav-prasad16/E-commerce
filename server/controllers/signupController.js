@@ -1,6 +1,6 @@
 const User = require('../models/userModel');
 
-export const signup = async (req, res) => {
+const signup = async (req, res) => {
   const userData = req.body;
   if (
     !userData.firstName ||
@@ -35,3 +35,5 @@ export const signup = async (req, res) => {
     return res.status(500).json({ msg: 'Internal Server Error' });
   }
 };
+
+module.exports = { signup };

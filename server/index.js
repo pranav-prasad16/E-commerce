@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const stripe = require('stripe');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 //routes
 const loginRouter = require('./routes/login');
@@ -24,19 +24,6 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT;
 
-const corsOptions = {
-  origin: 'http://localhost:2717',
-  methods: 'GET, PUT, PATCH POST, DELETE',
-  credentials: true,
-  OptionSuccessStaus: 204,
-};
-
-// using cors middleware
-app.use(cors(corsOptions));
-
-const adminAuthMiddlware = require('./middleware/adminAuth');
-const authMiddlware = require('./middleware/auth');
-
 // const mongodbConnect = require('./config/database');
 
 // MongoDB Connection URL for a local instance
@@ -48,10 +35,25 @@ mongoose
   .then(() => console.log('Mongodb connected'))
   .catch((err) => console.log('Error', err));
 
+const adminAuthMiddlware = require('./middleware/adminAuth');
+const authMiddlware = require('./middleware/auth');
+const errorHandler = require('./middleware/errorHandler');
+
+const corsOptions = {
+  origin: 'http://localhost:2717',
+  methods: 'GET, PUT, PATCH POST, DELETE',
+  credentials: true,
+  OptionSuccessStaus: 204,
+};
+
+// using cors middleware
+app.use(cors(corsOptions));
+
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public')); // For serving static files from public directory
 app.use(express.json()); // For parsing application/json
+app.use(errorHandler); // handles any foreseen error
 
 app.get('/', (req, res) => {
   res.send('Hello everyone!');

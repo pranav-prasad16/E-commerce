@@ -12,13 +12,13 @@ const {
 } = require('../controllers/productController');
 const router = express.Router();
 
-router.get('/', getAllProducts);
+router
+  .get('/', getAllProducts)
+  .get('/get/featured/:count', getFeaturedProducts);
 
 router.use(authMiddleware);
 
-router
-  .get('/:productId', getProduct)
-  .get('/get/featured/:count', getFeaturedProducts);
+router.get('/:productId', getProduct);
 
 router.use(adminAuthMiddleware);
 router

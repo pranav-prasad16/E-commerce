@@ -1,13 +1,12 @@
-const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
 
 const getAllUsers = async (req, res) => {
   try {
-    const allUsers = await User.find();
-    if (!allUsers) {
+    const userList = await User.find().select('name phone email');
+    if (!userList) {
       res.status(404).json({ msg: 'No users found' });
     }
-    res.status(200).json(allUsers);
+    res.status(200).json(userList);
   } catch (err) {
     console.log('Error : ', err);
     res.status(500).json({ msg: 'Internal Server error' });
@@ -15,15 +14,29 @@ const getAllUsers = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
+  const userId = req.params.userId;
   try {
-    const user = await User.find();
+    const user = await User.findById(userId);
     if (!user) {
-      res.status(404).json({ success: false, msg: 'No user found' });
+      res.status(404).json({ success: false, msg: 'User not found' });
     }
     res.status(200).json(user);
   } catch (err) {
     console.log('Error : ', err);
     res.status(500).json({ msg: 'Internal Server error' });
+  }
+};
+
+const getUserCount = async (req, res) => {
+  try {
+    const userCount = await User.countDocuments((count) => count);
+    if (!userCount) {
+      return res.status(404).json({ success: false, msg: 'No users found!' });
+    }
+    return res.status(200).json({ userCount: userCount });
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -58,4 +71,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsers, getUser, updateUser, deleteUser };
+module.exports = { getAllUsers, getUser, getUserCount, updateUser, deleteUser };

@@ -1,4 +1,8 @@
+const bcrypt = require('bcryptjs');
+const dotenv = require('dotenv');
 const User = require('../models/userModel');
+
+dotenv.config();
 
 const signup = async (req, res) => {
   const userData = req.body;
@@ -26,9 +30,12 @@ const signup = async (req, res) => {
     if (existingUser) {
       return res.status(401).json({ msg: 'User already exists' });
     }
-    const result = await User.create(userData);
+    //hashing the password -
+    userData.password = bcrypt.hashSync(userData.password, process.env.SALT);
 
-    console.log('result : ', result);
+    const newUser = await User.create(userData);
+
+    console.log(newUser);
     return res.status(201).json({ msg: 'Signup success' });
   } catch (err) {
     console.log('Error', err);

@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
 
 // Load environment variables from the .env file
@@ -9,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const login = async (req, res) => {
   const { emailOrPhone, password } = req.body;
 
-  if ((!emailOrPhone, !password)) {
+  if (!emailOrPhone || !password) {
     return res.status(401).json({ msg: 'All fields are required...' });
   }
 
@@ -21,7 +22,11 @@ const login = async (req, res) => {
       return res.status(409).json({ msg: 'User not found' });
     }
 
-    const passwordMatch = user.password === password ? true : false;
+    const passwordMatch = bcrypt.compareSync(password, user.password)
+      ? true
+      : false;
+
+    // const passwordMatch = user.password === password ? true : false;
     if (!passwordMatch) {
       return res.status(403).json({ msg: 'Incorrect password' });
     }
@@ -31,7 +36,8 @@ const login = async (req, res) => {
       {
         id: userId,
       },
-      JWT_SECRET
+      JWT_SECRET,
+      { expiresIn: '1d' }
     );
     console.log('Logged in');
     return res.status(201).json({ token, userId });

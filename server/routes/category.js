@@ -1,4 +1,6 @@
 const express = require('express');
+const authMiddleware = require('../middleware/auth');
+const adminAuthMiddleware = require('../middleware/adminAuth');
 const {
   getAllCategory,
   getCategory,
@@ -6,17 +8,14 @@ const {
   updateCateogry,
   deleteCategory,
 } = require('../controllers/categoryController');
-const authMiddleware = require('../middleware/auth');
-const adminAuthMiddleware = require('../middleware/adminAuth');
 const router = express.Router();
 
-router.get('/', getAllCategory);
+router.get('/', getAllCategory).get('/:categoryId', getCategory);
 
 router.use(authMiddleware);
 router.use(adminAuthMiddleware);
 router
   .post('/', postCategory)
-  .get('/:categoryId', getCategory)
   .patch('/:categoryId', updateCateogry)
   .delete('/:categoryId', deleteCategory);
 

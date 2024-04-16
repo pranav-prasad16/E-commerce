@@ -22,7 +22,7 @@ const getAllUserOrders = async (req, res) => {
   try {
     const userOrderList = await Order.find({ userId })
       .populate({
-        path: 'orderItem',
+        path: 'orderItems',
         populate: { path: 'product', populate: 'category' },
       })
       .sort({ orderDate: -1 });
@@ -42,7 +42,7 @@ const getOrder = async (req, res) => {
     const order = await Order.findById(orderId)
       .populate('user', 'name email')
       .populate({
-        path: 'orderItem',
+        path: 'orderItems',
         populate: { path: 'product', populate: 'category' },
       });
     if (!order) {
@@ -104,7 +104,7 @@ const getOrderCount = async (req, res) => {
 const postOrder = async (req, res) => {
   const orderItemsIds = Promise.all(
     req.body.orderItems.map(async (orderItem) => {
-      let newOrderItem = new OrderItem({
+      const newOrderItem = new OrderItem({
         quantity: orderItem.quantity,
         product: orderItem.product,
       });
@@ -129,7 +129,7 @@ const postOrder = async (req, res) => {
 
   const totalPrice = totalPrices.reduce((a, b) => a + b, 0);
   try {
-    let newOrder = new Order({
+    const newOrder = new Order({
       orderItems: orderItemsIdsResolved,
       shippingAddress1: req.body.shippingAddress1,
       city: req.body.city,

@@ -51,7 +51,8 @@ app.use(cors(corsOptions));
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public')); // For serving static files from public directory
+// app.use(express.static('public')); // For serving static files from public directory
+app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
 app.use(express.json()); // For parsing application/json
 app.use(errorHandler); // handles any foreseen error
 

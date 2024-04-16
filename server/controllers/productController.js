@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const multer = require('multer');
 const Product = require('../models/productModel');
 const Category = require('../models/categoryModel');
 
@@ -107,35 +108,27 @@ const getFeaturedProducts = async (req, res) => {
 };
 
 const postProduct = async (req, res) => {
-  const productData = req.body;
-  // console.log('current user id : ', req.user);
-  // Check if a product with the same name already exists
-  if (
-    !productData.name ||
-    !productData.description ||
-    !productData.richDescription ||
-    !productData.price ||
-    !productData.category ||
-    // !productData.image ||
-    !productData.countInStock
-  ) {
-    return res.status(400).json({ msg: 'Missing Fields' });
-  }
-
-  const categoryExist = await Category.findById(productData.category);
-  if (!categoryExist) {
-    return res.status(404).json({ msg: 'This Category doesnot exist' });
-  }
-
-  const existingProduct = await Product.findOne({ name: productData.name });
-  if (existingProduct) {
-    return res
-      .status(400)
-      .json({ success: false, msg: 'Product with this name already exists' });
-  }
-
+  const category = await Category.findById(req.body.category);
+  if (!category) return res.status(404).json({ msg: 'Invalid Category' });
+  const file = req.file;
+  if (!file) return res.status(400).json({ msg: 'No image in the request' });
+  const fileName = req.file.fileName;
+  const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
   try {
-    const newProduct = await Product.create(productData);
+    // const newProduct = await Product.create(productData);
+    const newProduct = new Product({
+      name: req.body.name,
+      description: req.body.description,
+      richDescription: req.body.richDescription,
+      price: req.body.price,
+      brand: req.body.brand,
+      category: category,
+      image: `${basePath}${fileName}`,
+      countInStock: req.body.countInStock,
+      rating: req.body.rating,
+      numReviews: req.body.numReviews,
+      isFeatured: req.body.isFeatured,
+    });
     return res.status(201).json(newProduct);
   } catch (err) {
     console.error('Error creating product:', err);
@@ -179,6 +172,37 @@ const updateProduct = async (req, res) => {
   }
 };
 
+const updateProductImages = async (req, res) => {
+  const { productId } = req.params;
+  if (!mongoose.isValidObjectId(productId)) {
+    return res.status(404).json({ msg: 'Invalid product id' });
+  }
+  try {
+    const files = req.files;
+    let imagesPaths = [];
+    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+    if (files) {
+      files.map((file) => {
+        imagesPaths.push(`${basePath}${file.fileName}`);
+      });
+    }
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      { images: imagesPaths },
+      {
+        new: true,
+      }
+    );
+    if (!updatedProduct) {
+      return res.status(404).json({ msg: 'Product not found' });
+    }
+    return res.status(201).json(updatedProduct);
+  } catch (error) {
+    console.error('Error updating product:', err);
+    return res.status(500).json({ msg: 'Internal server error' });
+  }
+};
+
 const deleteProduct = async (req, res) => {
   const { productId } = req.params;
 
@@ -207,5 +231,6 @@ module.exports = {
   getFeaturedProducts,
   postProduct,
   updateProduct,
+  updateProductImages,
   deleteProduct,
 };

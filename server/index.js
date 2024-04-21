@@ -29,6 +29,7 @@ const port = process.env.PORT;
 // MongoDB Connection URL for a local instance
 // Connection URI
 const uri = process.env.DATABASE_URL;
+const API_URL = process.env.API_URL;
 
 mongoose
   .connect(uri)
@@ -56,31 +57,31 @@ app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
 app.use(express.json()); // For parsing application/json
 app.use(errorHandler); // handles any foreseen error
 
-app.get('/', (req, res) => {
+app.get(`${API_URL}`, (req, res) => {
   res.send('Hello everyone!');
 });
 
-app.use('/api/login', loginRouter);
+app.use(`${API_URL}/login`, loginRouter);
 
-app.use('/api/signup', signupRouter);
+app.use(`${API_URL}/signup`, signupRouter);
 
-app.use('/api/products', productsRouter);
+app.use(`${API_URL}/products`, productsRouter);
 
-app.use('/api/orders', ordersRouter);
+app.use(`${API_URL}/orders`, ordersRouter);
 
-app.use('/api/cart', cartRouter);
+app.use(`${API_URL}/cart`, cartRouter);
 
-app.use('/api/notification', notificationRouter);
+app.use(`${API_URL}/notification`, notificationRouter);
 
-// app.use('/api/payment', paymentRouter);
+// app.use(`${API_URL}/payment`, paymentRouter);
 
-app.use('/api/profile', profileRouter);
+app.use(`${API_URL}/profile`, profileRouter);
 
-app.use('/api/review', reviewRouter);
+// app.use(`${API_URL}/review`, reviewRouter);
 
-app.use('/api/user', userRouter);
+app.use(`${API_URL}/user`, userRouter);
 
-app.use('/api/wishlist', wishlistRouter);
+app.use(`${API_URL}/wishlist`, wishlistRouter);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

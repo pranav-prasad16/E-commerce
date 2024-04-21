@@ -71,7 +71,7 @@ app.use(`${API_URL}/orders`, ordersRouter);
 
 app.use(`${API_URL}/cart`, cartRouter);
 
-app.use(`${API_URL}/notification`, notificationRouter);
+// app.use(`${API_URL}/notification`, notificationRouter);
 
 // app.use(`${API_URL}/payment`, paymentRouter);
 

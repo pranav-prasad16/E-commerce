@@ -30,8 +30,9 @@ const signup = async (req, res) => {
     if (existingUser) {
       return res.status(401).json({ msg: 'User already exists' });
     }
+    const salt = bcrypt.genSaltSync(10);
     //hashing the password -
-    userData.password = bcrypt.hashSync(userData.password, process.env.SALT);
+    userData.password = bcrypt.hashSync(userData.password, salt);
 
     const newUser = await User.create(userData);
 

@@ -8,16 +8,14 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const login = async (req, res) => {
-  const { emailOrPhone, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!emailOrPhone || !password) {
+  if (!email || !password) {
     return res.status(401).json({ msg: 'All fields are required...' });
   }
 
   try {
-    const user = await User.findOne({
-      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
-    });
+    const user = await User.findOne({ email: email });
     if (!user) {
       return res.status(409).json({ msg: 'User not found' });
     }

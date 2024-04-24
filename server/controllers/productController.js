@@ -4,43 +4,14 @@ const Product = require('../models/productModel');
 const Category = require('../models/categoryModel');
 
 const getAllProducts = async (req, res) => {
-  // const {
-  //   category,
-  //   priceFrom,
-  //   priceTo,
-  //   page = 1,
-  //   limit = 10,
-  //   sortBy = 'createdAt',
-  //   sortOrder = 'desc',
-  // } = req.query;
-  // let query = {};
-
-  // if (category) {
-  //   query.category = category;
-  // }
-  // if (priceFrom) {
-  //   query.price = { $gte: priceFrom }; // greater than equal to
-  // }
-  // if (priceTo) {
-  //   query.price = { ...query.price, $lte: priceTo }; // less than equal to
-  // }
-
-  // const options = {
-  //   page,
-  //   limit,
-  //   sort: { [sortBy]: sortOrder }, // sort object for mongoose-paginate
-  //   populate: 'category', // optional: populate category
-  // };
-
   let filter = {};
   if (req.query.categories) {
     filter = { category: req.query.categories.split(',') };
   }
-
   try {
     // const productList = await Product.paginate(query, options);
     const productList = await Product.find(filter).select(
-      'name image description -_id'
+      'name image description brand price'
     );
     // const products = await Product.find().populate('category');
     if (!productList.length) {
@@ -76,7 +47,7 @@ const getProduct = async (req, res) => {
 
 const getProductCount = async (req, res) => {
   try {
-    const productCount = await Product.countDocuments((count) => count);
+    const productCount = await Product.countDocuments();
     if (!productCount) {
       return res
         .status(404)
@@ -84,17 +55,21 @@ const getProductCount = async (req, res) => {
     }
     return res.status(200).json({ productCount: productCount });
   } catch (err) {
-    console.error('Error fetching product:', err);
+    console.error('Error fetching product:', err.message);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
 const getFeaturedProducts = async (req, res) => {
-  const count = req.params.count ? req.params.count : 5;
+  const count = req.params.count ? parseInt(req.params.count) : 5;
+  if (isNaN(count) || count <= 0) {
+    // Check if count is not a number or less than or equal to 0
+    count = 5; // Default count to 5 if invalid or not provided
+  }
   try {
-    const featuredProducts = await Product.find({ isFeatured: true }).limit(
-      +count
-    );
+    const featuredProducts = await Product.find({ isFeatured: true })
+      .limit(+count)
+      .select('name image description brand price');
     if (!featuredProducts) {
       return res
         .status(404)
@@ -112,11 +87,12 @@ const postProduct = async (req, res) => {
   if (!category) return res.status(404).json({ msg: 'Invalid Category' });
   const file = req.file;
   if (!file) return res.status(400).json({ msg: 'No image in the request' });
-  const fileName = req.file.fileName;
+  const fileName = req.file.filename;
   const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+  // console.log(basePath + fileName);
   try {
     // const newProduct = await Product.create(productData);
-    const newProduct = new Product({
+    let newProduct = new Product({
       name: req.body.name,
       description: req.body.description,
       richDescription: req.body.richDescription,
@@ -129,6 +105,13 @@ const postProduct = async (req, res) => {
       numReviews: req.body.numReviews,
       isFeatured: req.body.isFeatured,
     });
+    // console.log(`${file}`);
+    // console.log(`${fileName}`);
+    // console.log(`${basePath}${fileName}`);
+    newProduct = await newProduct.save();
+
+    if (!newProduct)
+      return res.status(500).send('The product cannot be created');
     return res.status(201).json(newProduct);
   } catch (err) {
     console.error('Error creating product:', err);
@@ -183,7 +166,7 @@ const updateProductImages = async (req, res) => {
     const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
     if (files) {
       files.map((file) => {
-        imagesPaths.push(`${basePath}${file.fileName}`);
+        imagesPaths.push(`${basePath}${file.filename}`);
       });
     }
     const updatedProduct = await Product.findByIdAndUpdate(

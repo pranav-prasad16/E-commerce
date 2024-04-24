@@ -9,6 +9,7 @@ const bcrypt = require('bcryptjs');
 const loginRouter = require('./routes/login');
 const signupRouter = require('./routes/signup');
 const productsRouter = require('./routes/product');
+const categoryRouter = require('./routes/category');
 const ordersRouter = require('./routes/order');
 const cartRouter = require('./routes/cart');
 const notificationRouter = require('./routes/notification');
@@ -61,11 +62,13 @@ app.get(`${API_URL}`, (req, res) => {
   res.send('Hello everyone!');
 });
 
-app.use(`${API_URL}/login`, loginRouter);
+app.use(`${API_URL}/users/login`, loginRouter);
 
-app.use(`${API_URL}/signup`, signupRouter);
+app.use(`${API_URL}/users/signup`, signupRouter);
 
 app.use(`${API_URL}/products`, productsRouter);
+
+app.use(`${API_URL}/category`, categoryRouter);
 
 app.use(`${API_URL}/orders`, ordersRouter);
 

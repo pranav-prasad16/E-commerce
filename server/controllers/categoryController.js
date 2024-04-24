@@ -4,8 +4,10 @@ const Product = require('../models/productModel');
 const getAllCategory = async (req, res) => {
   try {
     const categoryList = await Category.find();
-    if (!categoryList) {
-      return res.status(404).json({ msg: 'No category present' });
+    if (!categoryList.length) {
+      return res
+        .status(404)
+        .json({ success: false, msg: 'No category present' });
     }
     res.status(200).json(categoryList);
   } catch (err) {
@@ -15,21 +17,17 @@ const getAllCategory = async (req, res) => {
 };
 
 const getCategory = async (req, res) => {
-  const selectedCategory = req.params.category;
+  const categoryId = req.params.categoryId;
   try {
-    await Product.find({ category: selectedCategory })
-      .populate('category')
-      .exec((err, products) => {
-        if (err) {
-          console.error('Error : ', err);
-        } else if (selectedCategory.length === 0) {
-          res.status(404).json({ message: 'No products in this category' });
-        } else {
-          res.status(200).json(products);
-        }
-      });
+    const products = await Product.find({
+      category: categoryId,
+    }).populate('category');
+    if (products.length === 0) {
+      return res.status(404).json({ message: 'No products in this category' });
+    }
+    res.status(200).json(products);
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error('Error fetching products:', error.message);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -40,9 +38,11 @@ const postCategory = async (req, res) => {
     return res.status(400).json({ msg: 'Missing Fields' });
   }
   try {
-    const existingCategory = await Category.find({ name: categoryData.name });
+    const existingCategory = await Category.findOne({
+      name: categoryData.name,
+    });
     if (existingCategory) {
-      return res.status(401).json({ msg: 'This category already exists' });
+      return res.status(400).json({ msg: 'This category already exists' });
     }
     const newCategory = await Category.create(categoryData);
     return res.status(201).json(newCategory);

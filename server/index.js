@@ -82,7 +82,7 @@ app.use(`${API_URL}/profile`, profileRouter);
 
 // app.use(`${API_URL}/review`, reviewRouter);
 
-app.use(`${API_URL}/user`, userRouter);
+app.use(`${API_URL}/users`, userRouter);
 
 app.use(`${API_URL}/wishlist`, wishlistRouter);
 

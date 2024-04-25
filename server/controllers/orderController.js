@@ -5,8 +5,9 @@ const OrderItem = require('../models/orderItemModel');
 const getAllOrders = async (req, res) => {
   try {
     const orderList = await Order.find()
-      .populate('user', 'name email')
-      .sort('orderDate');
+      .populate('user', 'firstName lastName email phone')
+      .sort('orderDate')
+      .select('orderItems totalPrice user status');
     if (!orderList || !orderList.length) {
       return res.status(200).json({ msg: 'No orders found' });
     }
@@ -20,7 +21,7 @@ const getAllOrders = async (req, res) => {
 const getAllUserOrders = async (req, res) => {
   const userId = req.params.userId;
   try {
-    const userOrderList = await Order.find({ userId })
+    const userOrderList = await Order.find({ user: userId })
       .populate({
         path: 'orderItems',
         populate: { path: 'product', populate: 'category' },
@@ -40,7 +41,10 @@ const getOrder = async (req, res) => {
   const orderId = req.params.orderId;
   try {
     const order = await Order.findById(orderId)
-      .populate('user', 'name email')
+      .populate(
+        'user',
+        'firstName lastName email phone shippingAddress billingAddress'
+      )
       .populate({
         path: 'orderItems',
         populate: { path: 'product', populate: 'category' },
@@ -62,7 +66,7 @@ const getOrderStatus = async (req, res) => {
     if (!order.status) {
       return res.status(404).json({ msg: 'Order status not found!' });
     }
-    return res.status(200).json(order.status);
+    return res.status(200).json({ status: order.status });
   } catch (err) {
     console.log('Error : ', err.message);
     return res.status(500).json({ msg: 'Internal server error' });
@@ -72,7 +76,7 @@ const getOrderStatus = async (req, res) => {
 const getTotalRevenue = async (req, res) => {
   try {
     const totalRevenue = await Order.aggregate([
-      { $group: { _id: null, totalReveue: { $sum: 'totalPrice' } } },
+      { $group: { _id: null, totalRevenue: { $sum: '$totalPrice' } } },
     ]);
     if (!totalRevenue) {
       return res
@@ -90,11 +94,11 @@ const getTotalRevenue = async (req, res) => {
 
 const getOrderCount = async (req, res) => {
   try {
-    const orderCount = await Order.countDocuments((count) => count);
+    const orderCount = await Order.countDocuments();
     if (!orderCount) {
       return res.status(404).json({ success: false, msg: 'No orders found!' });
     }
-    return res.status(200).json({ productCount: orderCount });
+    return res.status(200).json({ orderCount: orderCount });
   } catch (err) {
     console.error('Error fetching product:', err);
     return res.status(500).json({ error: 'Internal server error' });
@@ -104,7 +108,7 @@ const getOrderCount = async (req, res) => {
 const postOrder = async (req, res) => {
   const orderItemsIds = Promise.all(
     req.body.orderItems.map(async (orderItem) => {
-      const newOrderItem = new OrderItem({
+      let newOrderItem = new OrderItem({
         quantity: orderItem.quantity,
         product: orderItem.product,
       });
@@ -117,7 +121,7 @@ const postOrder = async (req, res) => {
 
   const totalPrices = await Promise.all(
     orderItemsIdsResolved.map(async (orderItemId) => {
-      const orderItem = await OrderItem.findbyId(orderItemId).populate(
+      const orderItem = await OrderItem.findById(orderItemId).populate(
         'product',
         'price'
       );
@@ -131,16 +135,16 @@ const postOrder = async (req, res) => {
   try {
     const newOrder = new Order({
       orderItems: orderItemsIdsResolved,
-      shippingAddress1: req.body.shippingAddress1,
-      city: req.body.city,
-      zip: req.body.zip,
-      country: req.body.country,
-      phone: req.body.phone,
-      status: req.body.status,
       totalPrice: totalPrice,
       user: req.body.user,
+      status: req.body.status,
+      shippingAddress: req.body.shippingAddress,
+      street: req.body.street,
+      pinCode: req.body.pinCode,
+      city: req.body.city,
+      country: req.body.country,
     });
-    newOrder = await newOrder.save();
+    await newOrder.save();
 
     return res.status(201).json(newOrder);
   } catch (err) {
@@ -186,28 +190,30 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-const deleteOrder = (req, res) => {
+const deleteOrder = async (req, res) => {
   const { orderId } = req.params;
-  const deletedOrder = Order.findByIdAndDelete(orderId)
-    .then(async (order) => {
-      if (deletedOrder) {
-        order.orderItem.map(async (orderItem) => {
-          await OrderItem.findByIdAndDelete(orderItem);
-        });
+  try {
+    const order = await Order.findById(orderId);
 
-        return res
-          .status(200)
-          .json({ success: true, msg: 'Order deleted successfully' });
-      } else {
-        return res
-          .status(404)
-          .json({ success: false, msg: 'Order not found!' });
-      }
-    })
-    .catch((err) => {
-      console.error('Error:', err.message);
-      return res.status(500).json({ msg: 'Internal server error' });
-    });
+    if (!order) {
+      return res.status(404).json({ success: false, msg: 'Order not found!' });
+    }
+
+    await Promise.all(
+      order.orderItems.map(async (orderItem) => {
+        await OrderItem.findByIdAndDelete(orderItem);
+      })
+    );
+
+    await Order.findByIdAndDelete(orderId);
+
+    return res
+      .status(200)
+      .json({ success: true, msg: 'Order deleted successfully' });
+  } catch (err) {
+    console.error('Error:', err.message);
+    return res.status(500).json({ msg: 'Internal server error' });
+  }
 };
 
 module.exports = {

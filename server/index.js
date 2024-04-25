@@ -4,6 +4,7 @@ const stripe = require('stripe');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const path = require('path');
 
 //routes
 const loginRouter = require('./routes/login');
@@ -54,7 +55,14 @@ app.use(cors(corsOptions));
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
 // app.use(express.static('public')); // For serving static files from public directory
-app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
+// app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
+
+// Define the path to the public folder
+const publicPath = path.join(__dirname, 'public');
+
+// Serve static files from the /public/uploads folder
+app.use('/uploads', express.static(path.join(publicPath, 'uploads')));
+
 app.use(express.json()); // For parsing application/json
 app.use(errorHandler); // handles any foreseen error
 

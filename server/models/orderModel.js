@@ -21,11 +21,12 @@ const orderSchema = new mongoose.Schema({
   status: { type: String, default: 'pending' },
   shippingAddress: {
     type: String,
-    requied: true,
+    required: true,
   },
-  street: String,
-  city: String,
-  pinCode: String,
+  street: { type: String, required: true },
+  pinCode: { type: String, required: true },
+  city: { type: String, required: true },
+  country: { type: String },
   orderDate: {
     type: Date,
     default: Date.now,

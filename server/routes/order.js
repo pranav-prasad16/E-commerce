@@ -18,18 +18,18 @@ const router = express.Router();
 router.use(authMiddleware);
 
 router
-  .get('/get/userOrders/:userId', getAllUserOrders)
+  .get('/get/user/order/:userId', getAllUserOrders)
   .get('/:orderId', getOrder)
-  .get('/:orderId/status', getOrderStatus)
+  .get('/status/:orderId', getOrderStatus)
   .post('/', postOrder)
-  .patch('/:orderId', updateOrder)
+  .put('/:orderId', updateOrder)
   .delete('/:orderId', deleteOrder);
 
 router.use(adminAuthMiddleware);
 
 router
   .get('/', getAllOrders)
-  .get('/get/totalSales', getTotalRevenue)
+  .get('/get/total/revenue', getTotalRevenue)
   .get('/get/count', getOrderCount)
-  .put('/:orderId', updateOrderStatus);
+  .patch('/update/order/status/:orderId', updateOrderStatus);
 module.exports = router;

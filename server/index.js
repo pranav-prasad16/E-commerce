@@ -16,7 +16,6 @@ const cartRouter = require('./routes/cart');
 const notificationRouter = require('./routes/notification');
 const paymentRouter = require('./routes/payment');
 const profileRouter = require('./routes/profile');
-const reviewRouter = require('./routes/review');
 const userRouter = require('./routes/user');
 const wishlistRouter = require('./routes/wishlist');
 
@@ -87,8 +86,6 @@ app.use(`${API_URL}/cart`, cartRouter);
 // app.use(`${API_URL}/payment`, paymentRouter);
 
 app.use(`${API_URL}/profile`, profileRouter);
-
-// app.use(`${API_URL}/review`, reviewRouter);
 
 app.use(`${API_URL}/users`, userRouter);
 

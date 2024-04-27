@@ -12,15 +12,13 @@ const {
 const router = express.Router();
 
 router.use(authMiddlware);
-
-router.patch('/:userId', updateUser);
-
 router.use(adminAuthMiddleware);
 
 router
   .get('/', getAllUsers)
   .get('/:userId', getUser)
   .get('/user/count', getUserCount)
+  .patch('/:userId', updateUser)
   .delete('/:userId', deleteUser);
 
 module.exports = router;

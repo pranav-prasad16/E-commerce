@@ -65,26 +65,6 @@ const updateUser = async (req, res) => {
   }
 };
 
-const updateUserPassword = async (req, res) => {
-  const userId = req.params.userId;
-  const { password } = req.body;
-  if (!password) {
-    return res.status(409).json({ msg: 'Missing fields' });
-  }
-  const salt = bcrypt.genSaltSync(10);
-  const hashPassword = bcrypt.hashSync(password, salt);
-  try {
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { password: hashPassword },
-      { new: true }
-    );
-  } catch (error) {
-    console.log('Error : ', error);
-    res.status(500).json({ msg: 'Internal Server error' });
-  }
-};
-
 const deleteUser = async (req, res) => {
   const userId = req.params.userId;
   try {
@@ -104,6 +84,5 @@ module.exports = {
   getUser,
   getUserCount,
   updateUser,
-  updateUserPassword,
   deleteUser,
 };

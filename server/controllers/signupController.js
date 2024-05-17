@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
 const User = require('../models/userModel');
+const Cart = require('../models/cartModel');
 
 dotenv.config();
 
@@ -37,7 +38,11 @@ const signup = async (req, res) => {
     const newUser = await User.create(userData);
 
     console.log(newUser);
-    return res.status(201).json({ msg: 'Signup success' });
+
+    // Create a cart for the user
+    const newCart = await Cart.create({ user: newUser._id });
+
+    return res.status(201).json({ msg: 'Signup success', newUser });
   } catch (err) {
     console.log('Error', err);
     return res.status(500).json({ msg: 'Internal Server Error' });

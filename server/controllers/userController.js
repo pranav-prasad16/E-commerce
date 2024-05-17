@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
 const User = require('../models/userModel');
+const Cart = require('../models/cartModel');
+const CartItem = require('../models/cartItemModel');
 
 dotenv.config();
 
@@ -68,10 +70,21 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const userId = req.params.userId;
   try {
-    const deletedUser = await User.findByIdAndDelete(userId);
-    if (!deletedUser) {
+    const user = await User.findById(userId);
+    if (!user) {
       res.status(404).json({ msg: 'User not found' });
     }
+
+    const cart = await Cart.findOne({ user: userId });
+
+    await Promise.all(
+      cart.cartItems.map(async (cartItem) => {
+        await CartItem.findByIdAndDelete(cartItem);
+      })
+    );
+
+    await User.findOneAndDelete(userId);
+
     res.status(200).json({ msg: 'User deleted successfully' });
   } catch (error) {
     console.log('Error : ', error);

@@ -1,20 +1,52 @@
 const mongoose = require('mongoose');
 
-const paymentMethodSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  type: {
+const paymentSchema = new mongoose.Schema({
+  customerId: {
     type: String,
-    enum: ['credit card', 'paypal', 'UPI', 'other'],
     required: true,
   },
-  cardNumber: String, // For credit cards
-  // Other fields based on the payment method type
+  productId: {
+    type: String,
+    required: true,
+  },
+  amount: {
+    type: Number,
+    required: true,
+  },
+  currency: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+  },
+  receipt_email: {
+    type: String,
+    required: true,
+  },
+  payment_status: {
+    type: String,
+    required: true,
+    enum: ['succeeded', 'pending', 'failed'], // Define possible statuses
+  },
+  shipping: {
+    name: {
+      type: String,
+      required: true,
+    },
+    address: {
+      country: {
+        type: String,
+        required: true,
+      },
+    },
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-const PaymentMethod = mongoose.model('PaymentMethod', paymentMethodSchema);
-
-module.exports = PaymentMethod;
+// Export the model
+const Payment = mongoose.model('Payment', paymentSchema);
+module.exports = Payment;
